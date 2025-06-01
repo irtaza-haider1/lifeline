@@ -3,37 +3,33 @@ import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Image,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
-// Define the fitness goals
-const fitnessGoals = [
-  { id: 1, title: 'Lose weight', icon: require('../../assets/images/fitness1.png') },
-  { id: 2, title: 'Gain Weight', icon: require('../../assets/images/fitness2.png') },
-  { id: 3, title: 'Build Muscle', icon: require('../../assets/images/fitness3.png') },
-  { id: 4, title: 'Modify your Diet', icon: require('../../assets/images/fitness4.png') },
-  { id: 5, title: 'Manage Stress', icon: require('../../assets/images/fitness5.png') },
-  { id: 6, title: 'Intermittent Fasting', icon: require('../../assets/images/fitness1.png') },
+// Routine options
+const routineOptions = [
+  { id: 1, title: 'At Office', icon: require('../../assets/images/routine1.png') },
+  { id: 2, title: 'Walking Daily', icon: require('../../assets/images/routine2.png') },
+  { id: 3, title: 'Working Physically', icon: require('../../assets/images/routine3.png') },
+  { id: 4, title: 'Mostly at Home', icon: require('../../assets/images/routine4.png') },
+  { id: 5, title: 'At Park', icon: require('../../assets/images/routine5.png') },
 ];
 
-export default function PrimaryGoalScreen() {
-  const [selectedGoal, setSelectedGoal] = useState<number | null>(1); // Default to first option
+export default function RoutineScreen() {
+  const [selectedRoutine, setSelectedRoutine] = useState<number | null>(1); // Default to first option
 
-  const handleGoalSelect = (goalId: number) => {
-    setSelectedGoal(goalId);
+  const handleRoutineSelect = (routineId: number) => {
+    setSelectedRoutine(routineId);
   };
 
   const handleContinue = () => {
-    if (selectedGoal) {
-      // Navigate to the Nutrition screen
-      router.push('/Nutrition');
-    }
+    // Navigate to the Limitation screen
+    router.push('/Limitation');
   };
 
   return (
@@ -60,54 +56,54 @@ export default function PrimaryGoalScreen() {
         <View style={styles.glassContainer}>
           <BlurView intensity={70} tint="light" style={styles.blurView}>
             <View style={styles.glassContent}>
-              <Text style={styles.title}>Select your primary fitness goal</Text>
+              <View style={styles.titleContainer}>
+                <View style={styles.titleLine} />
+                <Text style={styles.title}>What does your typical{'\n'}day look like?</Text>
+              </View>
               
-              <ScrollView 
-                style={styles.goalsContainer}
-                showsVerticalScrollIndicator={false}
-              >
-                {fitnessGoals.map((goal) => (
+              <View style={styles.optionsContainer}>
+                {routineOptions.map((routine) => (
                   <TouchableOpacity
-                    key={goal.id}
+                    key={routine.id}
                     style={[
-                      styles.goalOption,
-                      selectedGoal === goal.id && styles.selectedGoalOption
+                      styles.routineOption,
+                      selectedRoutine === routine.id && styles.selectedRoutineOption
                     ]}
-                    onPress={() => handleGoalSelect(goal.id)}
+                    onPress={() => handleRoutineSelect(routine.id)}
                   >
                     <Image 
-                      source={goal.icon}
-                      style={styles.goalIcon}
-                      resizeMode="contain"
+                      source={routine.icon}
+                      style={styles.routineIcon}
+                      resizeMode="cover"
                     />
                     <Text style={[
-                      styles.goalTitle,
-                      selectedGoal === goal.id && styles.selectedGoalText
+                      styles.routineTitle,
+                      selectedRoutine === routine.id && styles.selectedRoutineText
                     ]}>
-                      {goal.title}
+                      {routine.title}
                     </Text>
                     
-                    {selectedGoal === goal.id && (
+                    {selectedRoutine === routine.id && (
                       <View style={styles.checkmarkContainer}>
                         <Text style={styles.checkmark}>✓</Text>
                       </View>
                     )}
                   </TouchableOpacity>
                 ))}
-              </ScrollView>
+              </View>
+              
+              {/* Continue button - inside the glass container */}
+              {selectedRoutine && (
+                <TouchableOpacity
+                  style={styles.continueButton}
+                  onPress={handleContinue}
+                >
+                  <Text style={styles.continueButtonText}>Continue</Text>
+                </TouchableOpacity>
+              )}
             </View>
           </BlurView>
         </View>
-        
-        {/* Continue button - only visible when a goal is selected */}
-        {selectedGoal && (
-          <TouchableOpacity
-            style={styles.continueButton}
-            onPress={handleContinue}
-          >
-            <Text style={styles.continueButtonText}>Continue</Text>
-          </TouchableOpacity>
-        )}
       </View>
     </SafeAreaView>
   );
@@ -154,14 +150,6 @@ const styles = StyleSheet.create({
     paddingTop: 80,
     paddingBottom: 20,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 30,
-    marginTop: 10,
-    color: '#333',
-  },
   glassContainer: {
     flex: 1,
     borderRadius: 25,
@@ -183,34 +171,53 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 30,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'space-between',
   },
-  goalsContainer: {
+  titleContainer: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  titleLine: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#00B3B3',
+    marginBottom: 15,
+    borderRadius: 2,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
+  },
+  optionsContainer: {
     flex: 1,
   },
-  goalOption: {
+  routineOption: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f5f5f5',
     borderRadius: 50,
-    padding: 15,
+    padding: 12,
     marginBottom: 12,
     height: 60,
   },
-  selectedGoalOption: {
-    backgroundColor: '#3EC6C9',
+  selectedRoutineOption: {
+    backgroundColor: '#00B3B3',
   },
-  goalIcon: {
-    width: 30,
-    height: 30,
+  routineIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     marginRight: 15,
   },
-  goalTitle: {
+  routineTitle: {
     fontSize: 16,
     fontWeight: '500',
     color: '#333',
     flex: 1,
   },
-  selectedGoalText: {
+  selectedRoutineText: {
     color: '#fff',
   },
   checkmarkContainer: {
@@ -222,16 +229,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   checkmark: {
-    color: '#3EC6C9',
+    color: '#00B3B3',
     fontSize: 16,
     fontWeight: 'bold',
   },
   continueButton: {
-    backgroundColor: '#3EC6C9',
-    borderRadius: 50,
+    backgroundColor: '#00B3B3',
+    borderRadius: 10,
     padding: 15,
     alignItems: 'center',
     marginTop: 20,
+    marginBottom: 10,
   },
   continueButtonText: {
     fontSize: 18,

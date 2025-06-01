@@ -3,36 +3,47 @@ import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Image,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
-// Define the fitness goals
-const fitnessGoals = [
-  { id: 1, title: 'Lose weight', icon: require('../../assets/images/fitness1.png') },
-  { id: 2, title: 'Gain Weight', icon: require('../../assets/images/fitness2.png') },
-  { id: 3, title: 'Build Muscle', icon: require('../../assets/images/fitness3.png') },
-  { id: 4, title: 'Modify your Diet', icon: require('../../assets/images/fitness4.png') },
-  { id: 5, title: 'Manage Stress', icon: require('../../assets/images/fitness5.png') },
-  { id: 6, title: 'Intermittent Fasting', icon: require('../../assets/images/fitness1.png') },
+// Define the diet types
+const dietTypes = [
+  { id: 1, title: 'Traditional', icon: require('../../assets/images/nutrition1.png') },
+  { id: 2, title: 'Vegetarian', icon: require('../../assets/images/nutrition2.png') },
+  { id: 3, title: 'Keto', icon: require('../../assets/images/nutrition3.png') },
+  { id: 4, title: 'Pescatarian', icon: require('../../assets/images/nutrition4.png') },
+  { id: 5, title: 'Vegan (Plant diet)', icon: require('../../assets/images/nutrition5.png') },
+  { id: 6, title: 'Paleo', icon: require('../../assets/images/nutrition6.png') },
+  { id: 7, title: 'Mediterranean', icon: require('../../assets/images/nutrition7.png') },
+  { id: 8, title: 'Diabetes type 1', icon: require('../../assets/images/nutrition8.png') },
+  { id: 9, title: 'Diabetes type 2', icon: require('../../assets/images/nutrition9.png') },
+  { id: 10, title: 'High-Protein', icon: require('../../assets/images/nutrition10.png') },
+  { id: 11, title: 'Calorie-Cutting', icon: require('../../assets/images/nutrition11.png') },
+  { id: 12, title: 'High Calories', icon: require('../../assets/images/nutrition12.png') },
 ];
 
-export default function PrimaryGoalScreen() {
-  const [selectedGoal, setSelectedGoal] = useState<number | null>(1); // Default to first option
+export default function NutritionScreen() {
+  const [selectedDiet, setSelectedDiet] = useState<number | null>(1); // Default to first option
 
-  const handleGoalSelect = (goalId: number) => {
-    setSelectedGoal(goalId);
+  const handleDietSelect = (dietId: number) => {
+    setSelectedDiet(dietId);
   };
 
   const handleContinue = () => {
-    if (selectedGoal) {
-      // Navigate to the Nutrition screen
-      router.push('/Nutrition');
+    if (selectedDiet) {
+      // If Diabetes type 1 is selected, navigate to the consent screen
+      if (selectedDiet === 8) { // ID 8 is for Diabetes type 1
+        router.push('/diabeticConset');
+      } else {
+        // For other diet types, navigate to the tabs
+        router.push('/(tabs)');
+      }
     }
   };
 
@@ -60,47 +71,53 @@ export default function PrimaryGoalScreen() {
         <View style={styles.glassContainer}>
           <BlurView intensity={70} tint="light" style={styles.blurView}>
             <View style={styles.glassContent}>
-              <Text style={styles.title}>Select your primary fitness goal</Text>
+              <View style={styles.titleContainer}>
+                <View style={styles.titleLine} />
+                <Text style={styles.title}>Choose your diet type</Text>
+              </View>
               
               <ScrollView 
-                style={styles.goalsContainer}
+                style={styles.dietsContainer}
                 showsVerticalScrollIndicator={false}
               >
-                {fitnessGoals.map((goal) => (
+                {dietTypes.map((diet) => (
                   <TouchableOpacity
-                    key={goal.id}
+                    key={diet.id}
                     style={[
-                      styles.goalOption,
-                      selectedGoal === goal.id && styles.selectedGoalOption
+                      styles.dietOption,
+                      selectedDiet === diet.id && styles.selectedDietOption
                     ]}
-                    onPress={() => handleGoalSelect(goal.id)}
+                    onPress={() => handleDietSelect(diet.id)}
                   >
                     <Image 
-                      source={goal.icon}
-                      style={styles.goalIcon}
+                      source={diet.icon}
+                      style={styles.dietIcon}
                       resizeMode="contain"
                     />
                     <Text style={[
-                      styles.goalTitle,
-                      selectedGoal === goal.id && styles.selectedGoalText
+                      styles.dietTitle,
+                      selectedDiet === diet.id && styles.selectedDietText
                     ]}>
-                      {goal.title}
+                      {diet.title}
                     </Text>
                     
-                    {selectedGoal === goal.id && (
+                    {selectedDiet === diet.id && (
                       <View style={styles.checkmarkContainer}>
                         <Text style={styles.checkmark}>✓</Text>
                       </View>
                     )}
                   </TouchableOpacity>
                 ))}
+                
+                {/* Extra space at the bottom for better scrolling */}
+                <View style={styles.scrollPadding} />
               </ScrollView>
             </View>
           </BlurView>
         </View>
         
-        {/* Continue button - only visible when a goal is selected */}
-        {selectedGoal && (
+        {/* Continue button - only visible when a diet is selected */}
+        {selectedDiet && (
           <TouchableOpacity
             style={styles.continueButton}
             onPress={handleContinue}
@@ -154,13 +171,23 @@ const styles = StyleSheet.create({
     paddingTop: 80,
     paddingBottom: 20,
   },
+  titleContainer: {
+    alignItems: 'center',
+    marginBottom: 30,
+    marginTop: 20,
+  },
+  titleLine: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#00B3B3',
+    marginBottom: 15,
+    borderRadius: 2,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 30,
-    marginTop: 10,
     color: '#333',
+    textAlign: 'center',
   },
   glassContainer: {
     flex: 1,
@@ -184,10 +211,10 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
-  goalsContainer: {
+  dietsContainer: {
     flex: 1,
   },
-  goalOption: {
+  dietOption: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f5f5f5',
@@ -196,21 +223,22 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     height: 60,
   },
-  selectedGoalOption: {
+  selectedDietOption: {
     backgroundColor: '#3EC6C9',
   },
-  goalIcon: {
+  dietIcon: {
     width: 30,
     height: 30,
     marginRight: 15,
+    borderRadius: 15,
   },
-  goalTitle: {
+  dietTitle: {
     fontSize: 16,
     fontWeight: '500',
     color: '#333',
     flex: 1,
   },
-  selectedGoalText: {
+  selectedDietText: {
     color: '#fff',
   },
   checkmarkContainer: {
@@ -225,6 +253,9 @@ const styles = StyleSheet.create({
     color: '#3EC6C9',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  scrollPadding: {
+    height: 20,
   },
   continueButton: {
     backgroundColor: '#3EC6C9',

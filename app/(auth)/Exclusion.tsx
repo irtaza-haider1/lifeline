@@ -3,36 +3,34 @@ import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Image,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
-// Define the fitness goals
-const fitnessGoals = [
-  { id: 1, title: 'Lose weight', icon: require('../../assets/images/fitness1.png') },
-  { id: 2, title: 'Gain Weight', icon: require('../../assets/images/fitness2.png') },
-  { id: 3, title: 'Build Muscle', icon: require('../../assets/images/fitness3.png') },
-  { id: 4, title: 'Modify your Diet', icon: require('../../assets/images/fitness4.png') },
-  { id: 5, title: 'Manage Stress', icon: require('../../assets/images/fitness5.png') },
-  { id: 6, title: 'Intermittent Fasting', icon: require('../../assets/images/fitness1.png') },
+// Define the allergen options
+const allergenOptions = [
+  { id: 1, title: 'Dairy', icon: require('../../assets/images/Dairy.png') },
+  { id: 2, title: 'Gluten', icon: require('../../assets/images/Gluten.png') },
+  { id: 3, title: 'Eggs', icon: require('../../assets/images/Eggs.png') },
+  { id: 4, title: 'Fish', icon: require('../../assets/images/Fish.png') },
+  { id: 5, title: 'I eat everything', icon: require('../../assets/images/all.png') },
 ];
 
-export default function PrimaryGoalScreen() {
-  const [selectedGoal, setSelectedGoal] = useState<number | null>(1); // Default to first option
+export default function ExclusionScreen() {
+  const [selectedAllergen, setSelectedAllergen] = useState<number | null>(1); // Default to first option
 
-  const handleGoalSelect = (goalId: number) => {
-    setSelectedGoal(goalId);
+  const handleAllergenSelect = (allergenId: number) => {
+    setSelectedAllergen(allergenId);
   };
 
   const handleContinue = () => {
-    if (selectedGoal) {
-      // Navigate to the Nutrition screen
-      router.push('/Nutrition');
+    if (selectedAllergen) {
+      // Navigate to the userEngagement screen
+      router.push('/userEngagement');
     }
   };
 
@@ -60,47 +58,47 @@ export default function PrimaryGoalScreen() {
         <View style={styles.glassContainer}>
           <BlurView intensity={70} tint="light" style={styles.blurView}>
             <View style={styles.glassContent}>
-              <Text style={styles.title}>Select your primary fitness goal</Text>
+              <View style={styles.titleContainer}>
+                <View style={styles.titleLine} />
+                <Text style={styles.title}>Do you have any allergen food?</Text>
+              </View>
               
-              <ScrollView 
-                style={styles.goalsContainer}
-                showsVerticalScrollIndicator={false}
-              >
-                {fitnessGoals.map((goal) => (
+              <View style={styles.allergensContainer}>
+                {allergenOptions.map((allergen) => (
                   <TouchableOpacity
-                    key={goal.id}
+                    key={allergen.id}
                     style={[
-                      styles.goalOption,
-                      selectedGoal === goal.id && styles.selectedGoalOption
+                      styles.allergenOption,
+                      selectedAllergen === allergen.id && styles.selectedAllergenOption
                     ]}
-                    onPress={() => handleGoalSelect(goal.id)}
+                    onPress={() => handleAllergenSelect(allergen.id)}
                   >
                     <Image 
-                      source={goal.icon}
-                      style={styles.goalIcon}
+                      source={allergen.icon}
+                      style={styles.allergenIcon}
                       resizeMode="contain"
                     />
                     <Text style={[
-                      styles.goalTitle,
-                      selectedGoal === goal.id && styles.selectedGoalText
+                      styles.allergenTitle,
+                      selectedAllergen === allergen.id && styles.selectedAllergenText
                     ]}>
-                      {goal.title}
+                      {allergen.title}
                     </Text>
                     
-                    {selectedGoal === goal.id && (
+                    {selectedAllergen === allergen.id && (
                       <View style={styles.checkmarkContainer}>
                         <Text style={styles.checkmark}>✓</Text>
                       </View>
                     )}
                   </TouchableOpacity>
                 ))}
-              </ScrollView>
+              </View>
             </View>
           </BlurView>
         </View>
         
-        {/* Continue button - only visible when a goal is selected */}
-        {selectedGoal && (
+        {/* Continue button - only visible when an allergen is selected */}
+        {selectedAllergen && (
           <TouchableOpacity
             style={styles.continueButton}
             onPress={handleContinue}
@@ -154,13 +152,23 @@ const styles = StyleSheet.create({
     paddingTop: 80,
     paddingBottom: 20,
   },
+  titleContainer: {
+    alignItems: 'center',
+    marginBottom: 30,
+    marginTop: 20,
+  },
+  titleLine: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#00B3B3',
+    marginBottom: 15,
+    borderRadius: 2,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 30,
-    marginTop: 10,
     color: '#333',
+    textAlign: 'center',
   },
   glassContainer: {
     flex: 1,
@@ -184,10 +192,10 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
-  goalsContainer: {
+  allergensContainer: {
     flex: 1,
   },
-  goalOption: {
+  allergenOption: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f5f5f5',
@@ -196,21 +204,22 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     height: 60,
   },
-  selectedGoalOption: {
+  selectedAllergenOption: {
     backgroundColor: '#3EC6C9',
   },
-  goalIcon: {
+  allergenIcon: {
     width: 30,
     height: 30,
     marginRight: 15,
+    borderRadius: 15,
   },
-  goalTitle: {
+  allergenTitle: {
     fontSize: 16,
     fontWeight: '500',
     color: '#333',
     flex: 1,
   },
-  selectedGoalText: {
+  selectedAllergenText: {
     color: '#fff',
   },
   checkmarkContainer: {
