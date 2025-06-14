@@ -3,18 +3,18 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  Dimensions,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Dimensions,
+    Image,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
-export default function UserEngagementScreen() {
+export default function UserEngagmentScreen() {
   const params = useLocalSearchParams();
   const gender = params.gender;
   const [isLoading, setIsLoading] = useState(true);
@@ -30,7 +30,7 @@ export default function UserEngagementScreen() {
 
   const handleContinue = () => {
     // Navigate to the fitness level screen
-    router.push({ pathname: '/(auth)/fitnessLevel', params: { gender } });
+    router.push({ pathname: '/(auth)/age', params: { gender } });
   };
 
   return (
@@ -38,7 +38,7 @@ export default function UserEngagementScreen() {
       <StatusBar style="dark" />
       
       <Image
-        source={require('../../assets/images/user-engagement.png')}
+        source={gender === 'male' ? require('../../assets/images/user-engagment2.png') : require('../../assets/images/user-engagment.png')}
         style={styles.backgroundImage}
       />
       
@@ -76,9 +76,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   backgroundImage: {
-    width: width,
+    width: width ,
     height: height,
-    resizeMode: 'cover',
+    resizeMode: "cover",
   },
   gradient: {
     position: 'absolute',

@@ -1,5 +1,5 @@
 import { BlurView } from 'expo-blur';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
@@ -29,6 +29,8 @@ const dietTypes = [
 ];
 
 export default function NutritionScreen() {
+  const params = useLocalSearchParams();
+  const gender = params.gender;
   const [selectedDiet, setSelectedDiet] = useState<number | null>(1); // Default to first option
 
   const handleDietSelect = (dietId: number) => {
@@ -39,10 +41,10 @@ export default function NutritionScreen() {
     if (selectedDiet) {
       // If Diabetes type 1 is selected, navigate to the consent screen
       if (selectedDiet === 8) { // ID 8 is for Diabetes type 1
-        router.push('/diabeticConset');
+        router.push({ pathname: '/(auth)/diabeticConset', params: { gender } });
       } else {
         // For other diet types, navigate to the tabs
-        router.push('/(tabs)');
+        router.push({ pathname: '/(tabs)', params: { gender } });
       }
     }
   };

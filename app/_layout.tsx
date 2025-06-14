@@ -7,33 +7,28 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-// Define a simple auth context (in a real app, you'd have a more robust auth system)
+// In a real app, you'd use a proper auth provider
 const isAuthenticated = false;
 
-export default function RootLayout() {
+function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const router = useRouter();
   const segments = useSegments();
-  
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
 
   useEffect(() => {
-    if (!loaded) return;
-    
+        // Prevent navigating until the segments are available
+    if (!segments[0]) {
+      return;
+    }
+
     const inAuthGroup = segments[0] === '(auth)';
-    
+
+    // If the user is not signed in and the initial segment is not in the auth group,
+    // redirect to the login page.
     if (!isAuthenticated && !inAuthGroup) {
-      // Redirect to the login page if not authenticated and not already in the auth group
       router.replace('/(auth)/login');
     }
-  }, [loaded, segments]);
-
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
+  }, [segments]);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -46,3 +41,21 @@ export default function RootLayout() {
     </ThemeProvider>
   );
 }
+
+export default function RootLayout() {
+  const [loaded, error] = useFonts({
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+  });
+
+  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
+
+  if (!loaded) {
+    return null;
+  }
+
+  return <RootLayoutNav />;
+}
+

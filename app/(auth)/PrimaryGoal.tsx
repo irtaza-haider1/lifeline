@@ -1,5 +1,5 @@
 import { BlurView } from 'expo-blur';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
@@ -23,6 +23,8 @@ const fitnessGoals = [
 ];
 
 export default function PrimaryGoalScreen() {
+  const params = useLocalSearchParams();
+  const gender = params.gender;
   const [selectedGoal, setSelectedGoal] = useState<number | null>(1); // Default to first option
 
   const handleGoalSelect = (goalId: number) => {
@@ -32,7 +34,7 @@ export default function PrimaryGoalScreen() {
   const handleContinue = () => {
     if (selectedGoal) {
       // Navigate to the Nutrition screen
-      router.push('/Nutrition');
+      router.push({ pathname: '/(auth)/Nutrition', params: { gender } });
     }
   };
 

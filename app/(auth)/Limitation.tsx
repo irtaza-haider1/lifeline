@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
@@ -27,6 +27,8 @@ const limitationOptions = [
 ];
 
 export default function LimitationScreen() {
+  const params = useLocalSearchParams();
+  const gender = params.gender;
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLimitations, setSelectedLimitations] = useState<number[]>([1, 6, 7]); // Default to Back Pain, Asthma, Obesity
   const [showDropdown, setShowDropdown] = useState(false);
@@ -61,7 +63,7 @@ export default function LimitationScreen() {
 
   const handleContinue = () => {
     // Navigate to the focusArea screen
-    router.push('/focusArea');
+    router.push({ pathname: '/(auth)/focusArea', params: { gender } });
   };
 
   return (

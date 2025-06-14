@@ -15,7 +15,7 @@ import {
 export default function FemaleScreen() {
   const handleContinue = () => {
     // Navigate to the PrimaryGoal screen
-    router.push('/(auth)/PrimaryGoal');
+    router.push({ pathname: '/(auth)/PrimaryGoal', params: { gender: 'female' } });
   };
 
   return (

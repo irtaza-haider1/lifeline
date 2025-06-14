@@ -3,12 +3,12 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import {
-    Image,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
 // Focus area options
@@ -40,7 +40,7 @@ export default function FocusAreaScreen() {
 
   const handleContinue = () => {
     // Navigate to the main tabs
-    router.push('/(tabs)');
+    router.push({ pathname: '/(auth)/userEngagment', params: { gender } });
   };
 
   // Function to get the appropriate line style based on area ID

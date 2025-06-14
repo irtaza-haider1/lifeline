@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import {
@@ -12,13 +12,15 @@ import {
 } from 'react-native';
 
 export default function DiabeticConsentScreen() {
+  const params = useLocalSearchParams();
+  const gender = params.gender;
   const handleBack = () => {
     router.back();
   };
 
   const handleAgree = () => {
     // Navigate to the Exclusion screen after consent
-    router.push('/Exclusion');
+    router.push({ pathname: '/(auth)/Exclusion', params: { gender } });
   };
 
   return (

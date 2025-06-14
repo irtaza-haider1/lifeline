@@ -1,5 +1,5 @@
 import { BlurView } from 'expo-blur';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
@@ -21,6 +21,8 @@ const routineOptions = [
 ];
 
 export default function RoutineScreen() {
+  const params = useLocalSearchParams();
+  const gender = params.gender;
   const [selectedRoutine, setSelectedRoutine] = useState<number | null>(1); // Default to first option
 
   const handleRoutineSelect = (routineId: number) => {
@@ -29,7 +31,7 @@ export default function RoutineScreen() {
 
   const handleContinue = () => {
     // Navigate to the Limitation screen
-    router.push('/Limitation');
+    router.push({ pathname: '/(auth)/Limitation', params: { gender } });
   };
 
   return (

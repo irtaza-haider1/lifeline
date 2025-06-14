@@ -1,14 +1,14 @@
 import { BlurView } from 'expo-blur';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
-    Image,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 // Define the allergen options
@@ -21,6 +21,8 @@ const allergenOptions = [
 ];
 
 export default function ExclusionScreen() {
+  const params = useLocalSearchParams();
+  const gender = params.gender;
   const [selectedAllergen, setSelectedAllergen] = useState<number | null>(1); // Default to first option
 
   const handleAllergenSelect = (allergenId: number) => {
@@ -30,7 +32,7 @@ export default function ExclusionScreen() {
   const handleContinue = () => {
     if (selectedAllergen) {
       // Navigate to the userEngagement screen
-      router.push('/userEngagement');
+      router.push({ pathname: '/(auth)/userEngagement', params: { gender } });
     }
   };
 

@@ -1,6 +1,6 @@
 import Slider from '@react-native-community/slider';
 import { BlurView } from 'expo-blur';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
@@ -22,6 +22,8 @@ const fitnessLevels = [
 ];
 
 export default function FitnessLevelScreen() {
+  const params = useLocalSearchParams();
+  const gender = params.gender;
   const [fitnessLevel, setFitnessLevel] = useState(3); // Default to middle value (Somewhat Athletic)
 
   const handleSliderChange = (value: number) => {
@@ -30,7 +32,7 @@ export default function FitnessLevelScreen() {
 
   const handleContinue = () => {
     // Navigate to the Routine screen
-    router.push('/Routine');
+    router.push({ pathname: '/(auth)/Routine', params: { gender } });
   };
 
   return (

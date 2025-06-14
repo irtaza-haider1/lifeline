@@ -22,7 +22,7 @@ export default function GenderScreen() {
     setSelectedGender(gender);
   };
 
-  const handleContinue = () => {
+      const handleContinue = () => {
     if (selectedGender === 'male') {
       // Navigate to the Male screen
       router.push('/(auth)/Male');
