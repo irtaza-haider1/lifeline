@@ -19,17 +19,19 @@ export default function FitnessLevlScreen() {
   useEffect(() => {
     const interval = setInterval(() => {
       setProgress((prevProgress) => {
-        if (prevProgress >= 1) {
+        const newProgress = Math.min(prevProgress + 0.1, 1);
+        if (newProgress >= 1) {
           clearInterval(interval);
-          router.replace({ pathname: '/(auth)/graph', params });
-          return 1;
+          setTimeout(() => {
+            router.replace({ pathname: '/(auth)/graph', params });
+          }, 500); // Wait half a second before navigating
         }
-        return prevProgress + 0.1;
+        return newProgress;
       });
     }, 200); // Animate over 2 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [params]);
 
   return (
     <SafeAreaView style={styles.container}>

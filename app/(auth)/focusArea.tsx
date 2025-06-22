@@ -4,12 +4,14 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import {
   Image,
+  LayoutChangeEvent,
   SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native';
+import Svg, { Circle, Line } from 'react-native-svg';
 
 // Focus area options
 const focusAreas = [
@@ -22,13 +24,46 @@ const focusAreas = [
   { id: 7, title: 'Legs' },
 ];
 
+// Define target points for the male avatar
+const maleTargetPoints = {
+  // areaId: { x: percentWidth, y: percentHeight }
+  2: { x: 0.3, y: 0.25 },   // Shoulders
+  3: { x: 0.4, y: 0.3 },   // Chest
+  4: { x: 0.4, y: 0.4 },   // Arms
+  5: { x: 0.25, y: 0.55 },  // Back
+  6: { x: 0.6, y: 0.5},  // Belly
+  7: { x: 0.3, y: 0.8 },   // Legs
+};
+
+// Define target points for the female avatar
+const femaleTargetPoints = {
+  2: { x: 0.2, y: 0.25 },   // Shoulders
+  3: { x: 0.23, y: 0.29 },   // Chest
+  4: { x: 0.2, y: 0.4 },   // Arms
+  5: { x: 0.55, y: 0.38 },    // Back
+  6: { x: 0.44, y: 0.42 },   // Belly
+  7: { x: 0.3, y: 0.8 },    // Legs
+};
+
+interface Layout {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export default function FocusAreaScreen() {
   const params = useLocalSearchParams();
-  const [gender, setGender] = useState<string>('female'); // Default to female
-  const [selectedArea, setSelectedArea] = useState<number | null>(1); // Default to Full Body
+  const [gender, setGender] = useState<string>('female');
+  const [selectedArea, setSelectedArea] = useState<number | null>(1);
+  
+  // State to store layouts of buttons and the image
+  const [buttonLayouts, setButtonLayouts] = useState<{ [key: number]: Layout }>({});
+  const [imageContainerLayout, setImageContainerLayout] = useState<Layout | null>(null);
+  const [bodyContainerLayout, setBodyContainerLayout] = useState<Layout | null>(null);
+
 
   useEffect(() => {
-    // Get gender from params or use default
     if (params.gender) {
       setGender(params.gender as string);
     }
@@ -39,34 +74,22 @@ export default function FocusAreaScreen() {
   };
 
   const handleContinue = () => {
-    // Navigate to the main tabs
     router.push({ pathname: '/(auth)/userEngagment', params: { gender } });
   };
 
-  // Function to get the appropriate line style based on area ID
-  const getLineStyle = (areaId: number) => {
-    switch(areaId) {
-      case 2: return styles.lineShoulders;
-      case 3: return styles.lineChest;
-      case 4: return styles.lineArms;
-      case 5: return styles.lineBack;
-      case 6: return styles.lineBelly;
-      case 7: return styles.lineLegs;
-      default: return {};
-    }
+  // Store layout of each button
+  const onButtonLayout = (event: LayoutChangeEvent, areaId: number) => {
+    const { layout } = event.nativeEvent;
+    setButtonLayouts((prev) => ({ ...prev, [areaId]: layout }));
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
       
-      {/* Top right corner circle */}
       <View style={styles.topCircle} />
-      
-      {/* Bottom left corner circle */}
       <View style={styles.bottomCircle} />
 
-      {/* Logo */}
       <View style={styles.logoContainer}>
         <Image
           source={require('../../assets/images/running.png')}
@@ -79,15 +102,16 @@ export default function FocusAreaScreen() {
         <View style={styles.titleContainer}>
           <View style={styles.titleLine} />
           <Text style={styles.title}>Choose Your Focus Area</Text>
-          <Text style={styles.subtitle}>Tell us which part of your body you'd like to{'\n'}focus on during your workouts</Text>
+          <Text style={styles.subtitle}>Tell us which part of your body you'd like to{`'\n'`}focus on during your workouts</Text>
         </View>
         
-        {/* Glass container */}
         <View style={styles.glassContainer}>
           <BlurView intensity={70} tint="light" style={styles.blurView}>
             <View style={styles.glassContent}>
-              <View style={styles.bodyContainer}>
-                {/* Focus Areas */}
+              <View 
+                style={styles.bodyContainer} 
+                onLayout={(event) => setBodyContainerLayout(event.nativeEvent.layout)}
+              >
                 <View style={styles.areasContainer}>
                   {focusAreas.map((area) => (
                     <TouchableOpacity
@@ -97,23 +121,17 @@ export default function FocusAreaScreen() {
                         selectedArea === area.id && styles.selectedAreaButton
                       ]}
                       onPress={() => handleAreaSelect(area.id)}
+                      onLayout={(event) => onButtonLayout(event, area.id)}
                     >
                       <Text style={styles.areaButtonText}>{area.title}</Text>
-                      
-                      {/* Show line for all options except Full Body */}
-                      {area.id !== 1 && (
-                        <View style={[
-                          styles.connectionLine,
-                          getLineStyle(area.id),
-                          selectedArea === area.id && styles.selectedLine
-                        ]} />
-                      )}
                     </TouchableOpacity>
                   ))}
                 </View>
                 
-                {/* Body Image */}
-                <View style={styles.bodyImageContainer}>
+                <View 
+                  style={styles.bodyImageContainer}
+                  onLayout={(event) => setImageContainerLayout(event.nativeEvent.layout)}
+                >
                   <Image
                     source={
                       gender === 'female' 
@@ -124,9 +142,55 @@ export default function FocusAreaScreen() {
                     resizeMode="contain"
                   />
                 </View>
+
+                {/* SVG for drawing lines */}
+                {bodyContainerLayout && (
+                  <Svg
+                    height="100%"
+                    width="100%"
+                    style={{ position: 'absolute', top: 0, left: 0, zIndex: 1 }}
+                  >
+                    {Object.keys(buttonLayouts).map((areaIdStr) => {
+                      const areaId = parseInt(areaIdStr, 10);
+                      if (areaId === 1 || !imageContainerLayout) return null;
+
+                      const currentTargetPoints = gender === 'male' ? maleTargetPoints : femaleTargetPoints;
+                      const buttonLayout = buttonLayouts[areaId];
+                      const target = currentTargetPoints[areaId];
+
+                      if (!buttonLayout || !target) return null;
+
+                      const startX = buttonLayout.x + buttonLayout.width;
+                      const startY = buttonLayout.y + buttonLayout.height / 2;
+                      
+                      const endX = imageContainerLayout.x + target.x * imageContainerLayout.width;
+                      const endY = imageContainerLayout.y + target.y * imageContainerLayout.height;
+
+                      return (
+                        <React.Fragment key={`group-${areaId}`}>
+                          <Line
+                            key={`line-${areaId}`}
+                            x1={startX}
+                            y1={startY}
+                            x2={endX}
+                            y2={endY}
+                            stroke="#00B3B3"
+                            strokeWidth={selectedArea === areaId ? "2.5" : "1.5"}
+                          />
+                          <Circle
+                            key={`circle-${areaId}`}
+                            cx={endX}
+                            cy={endY}
+                            r="4"
+                            fill="#00B3B3"
+                          />
+                        </React.Fragment>
+                      );
+                    })}
+                  </Svg>
+                )}
               </View>
               
-              {/* Continue button */}
               <TouchableOpacity
                 style={styles.continueButton}
                 onPress={handleContinue}
@@ -233,11 +297,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    position: 'relative', // Needed for absolute positioning of Svg
   },
   areasContainer: {
     width: '45%',
-    position: 'relative',
-    zIndex: 2,
+    zIndex: 2, // Ensure buttons are on top of lines
   },
   areaButton: {
     backgroundColor: '#fff',
@@ -247,7 +311,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 15,
     marginBottom: 10,
-    position: 'relative',
   },
   selectedAreaButton: {
     borderColor: '#00B3B3',
@@ -261,53 +324,12 @@ const styles = StyleSheet.create({
   bodyImageContainer: {
     width: '55%',
     height: '100%',
-    position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
   },
   bodyImage: {
     width: '100%',
     height: '90%',
-  },
-  connectionLine: {
-    position: 'absolute',
-    height: 2,
-    backgroundColor: '#00B3B3',
-    right: -50,
-    zIndex: 10,
-  },
-  selectedLine: {
-    height: 3,
-  },
-  lineShoulders: {
-    width: 50,
-    top: '20%',
-    right: -50,
-  },
-  lineChest: {
-    width: 50,
-    top: '30%',
-    right: -50,
-  },
-  lineArms: {
-    width: 50,
-    top: '40%',
-    right: -50,
-  },
-  lineBack: {
-    width: 50,
-    top: '50%',
-    right: -50,
-  },
-  lineBelly: {
-    width: 50,
-    top: '60%',
-    right: -50,
-  },
-  lineLegs: {
-    width: 50,
-    top: '80%',
-    right: -50,
   },
   continueButton: {
     backgroundColor: '#00B3B3',
