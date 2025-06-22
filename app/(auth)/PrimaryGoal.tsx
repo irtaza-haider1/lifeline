@@ -1,16 +1,20 @@
 import { BlurView } from 'expo-blur';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Dimensions,
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
+import { Shadow } from 'react-native-shadow-2';
 
 // Define the fitness goals
 const fitnessGoals = [
@@ -23,9 +27,22 @@ const fitnessGoals = [
 ];
 
 export default function PrimaryGoalScreen() {
-  const params = useLocalSearchParams();
-  const gender = params.gender;
-  const [selectedGoal, setSelectedGoal] = useState<number | null>(1); // Default to first option
+  const [selectedGoal, setSelectedGoal] = useState<number | null>(null); // No default selection
+  const [screenDimensions, setScreenDimensions] = useState(Dimensions.get('window'));
+  
+  useEffect(() => {
+    // Set up event listener for screen dimension changes
+    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+      setScreenDimensions(window);
+    });
+    
+    // Clean up the subscription on unmount
+    return () => subscription.remove();
+  }, []);
+
+  // Calculate responsive sizes based on screen width
+  const containerWidth = Math.min(screenDimensions.width * 0.9, 400); // 90% of screen width, max 400
+  const paddingHorizontal = screenDimensions.width < 380 ? 16 : 24;
 
   const handleGoalSelect = (goalId: number) => {
     setSelectedGoal(goalId);
@@ -33,8 +50,8 @@ export default function PrimaryGoalScreen() {
 
   const handleContinue = () => {
     if (selectedGoal) {
-      // Navigate to the Nutrition screen
-      router.push({ pathname: '/(auth)/Nutrition', params: { gender } });
+      // Navigate to the next screen
+      router.push('/(tabs)');
     }
   };
 
@@ -43,10 +60,10 @@ export default function PrimaryGoalScreen() {
       <StatusBar style="dark" />
       
       {/* Top right corner circle */}
-      <View style={styles.topCircle} />
+      <Image source={require('../../assets/images/Ellipse1.png')} style={styles.topCircle} />
       
       {/* Bottom left corner circle */}
-      <View style={styles.bottomCircle} />
+      <Image source={require('../../assets/images/Ellipse2.png')} style={styles.bottomCircle} />
 
       {/* Logo */}
       <View style={styles.logoContainer}>
@@ -57,16 +74,23 @@ export default function PrimaryGoalScreen() {
         />
       </View>
       
-      <View style={styles.contentWrapper}>
-        {/* Glass container */}
-        <View style={styles.glassContainer}>
-          <BlurView intensity={70} tint="light" style={styles.blurView}>
-            <View style={styles.glassContent}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
+      >
+        <Shadow
+          distance={1}
+          offset={[0, 0]}
+        >
+          <View style={[styles.glassContainer, { width: containerWidth }]}>
+            <BlurView intensity={-100} tint="light" style={StyleSheet.absoluteFill} />
+            <View style={[styles.glassContent, { padding: paddingHorizontal }]}>
               <Text style={styles.title}>Select your primary fitness goal</Text>
               
               <ScrollView 
                 style={styles.goalsContainer}
                 showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scrollContentContainer}
               >
                 {fitnessGoals.map((goal) => (
                   <TouchableOpacity
@@ -77,11 +101,13 @@ export default function PrimaryGoalScreen() {
                     ]}
                     onPress={() => handleGoalSelect(goal.id)}
                   >
-                    <Image 
-                      source={goal.icon}
-                      style={styles.goalIcon}
-                      resizeMode="contain"
-                    />
+                    <View style={styles.goalIconContainer}>
+                      <Image 
+                        source={goal.icon}
+                        style={styles.goalIcon}
+                        resizeMode="contain"
+                      />
+                    </View>
                     <Text style={[
                       styles.goalTitle,
                       selectedGoal === goal.id && styles.selectedGoalText
@@ -97,20 +123,20 @@ export default function PrimaryGoalScreen() {
                   </TouchableOpacity>
                 ))}
               </ScrollView>
+              
+              {/* Continue button - only shows when user selects a goal */}
+              {selectedGoal && (
+                <TouchableOpacity
+                  style={styles.continueButton}
+                  onPress={handleContinue}
+                >
+                  <Text style={styles.continueButtonText}>Continue</Text>
+                </TouchableOpacity>
+              )}
             </View>
-          </BlurView>
-        </View>
-        
-        {/* Continue button - only visible when a goal is selected */}
-        {selectedGoal && (
-          <TouchableOpacity
-            style={styles.continueButton}
-            onPress={handleContinue}
-          >
-            <Text style={styles.continueButtonText}>Continue</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+          </View>
+        </Shadow>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -118,93 +144,113 @@ export default function PrimaryGoalScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F4FEFD', // Light teal background like login screen
+    paddingTop: 20,
+  },
+  keyboardView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 0,
   },
   topCircle: {
     position: 'absolute',
-    top: 0,
-    right: 0,
-    width: 150,
-    height: 150,
-    backgroundColor: '#00B3B3',
-    borderBottomLeftRadius: 100,
-    zIndex: -1,
+    top: -105,
+    right: -50,
+    opacity: 0.77,
+    zIndex: 1,
   },
   bottomCircle: {
     position: 'absolute',
-    bottom: 0,
-    left: 0,
-    width: 150,
-    height: 150,
-    backgroundColor: '#00B3B3',
-    borderTopRightRadius: 100,
-    zIndex: -1,
+    bottom: -150,
+    left: -140,
+    opacity: 0.73,
+    zIndex: 2,
   },
   logoContainer: {
     position: 'absolute',
-    top: 40,
+    top: 60,
     left: 20,
-    zIndex: 1,
+    zIndex: 10, // Higher z-index to ensure it's above everything
+    padding: 8,
+    borderRadius: 8,
   },
   logo: {
-    width: 80,
-    height: 30,
+    width: 100,
+    height: 40,
   },
-  contentWrapper: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 80,
-    paddingBottom: 20,
+  glassContainer: {
+    borderRadius: 28,
+    overflow: 'hidden',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.35)',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    shadowColor: '#54c5d1',
+    shadowOffset: { width: 0, height: 16 },
+    shadowOpacity: 0.18,
+    shadowRadius: 38,
+    elevation: 0,
+    alignSelf: 'center',
+    zIndex: 3,
+  },
+  glassContent: {
+    paddingTop: 24,
+    paddingBottom: 24,
+    maxHeight: 600, // Limit height for scrolling
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 30,
-    marginTop: 10,
     color: '#333',
-  },
-  glassContainer: {
-    flex: 1,
-    borderRadius: 25,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.5)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 5,
-  },
-  blurView: {
-    flex: 1,
-    borderRadius: 25,
-  },
-  glassContent: {
-    flex: 1,
-    padding: 20,
-    paddingTop: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    textAlign: 'center',
+    marginBottom: 20,
+    marginTop: 10,
   },
   goalsContainer: {
-    flex: 1,
+    maxHeight: 400, // Limit scroll container height
+  },
+  scrollContentContainer: {
+    paddingBottom: 10,
   },
   goalOption: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 50,
-    padding: 15,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 16,
     marginBottom: 12,
-    height: 60,
+    minHeight: 70,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    // shadowColor: '#000',
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.08,
+    // shadowRadius: 4,
+    elevation: 2,
   },
   selectedGoalOption: {
-    backgroundColor: '#3EC6C9',
+    backgroundColor: 'rgba(0, 179, 179, 0.9)',
+    borderColor: 'rgba(0, 179, 179, 0.5)',
+    shadowColor: '#00B3B3',
+    shadowOpacity: 0.25,
+  },
+  goalIconContainer: {
+    width: 45,
+    height: 45,
+    borderRadius: 22.5,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
   },
   goalIcon: {
-    width: 30,
-    height: 30,
-    marginRight: 15,
+    width: 28,
+    height: 28,
   },
   goalTitle: {
     fontSize: 16,
@@ -214,30 +260,40 @@ const styles = StyleSheet.create({
   },
   selectedGoalText: {
     color: '#fff',
+    fontWeight: '600',
   },
   checkmarkContainer: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
+    marginLeft: 8,
   },
   checkmark: {
-    color: '#3EC6C9',
+    color: '#00B3B3',
     fontSize: 16,
     fontWeight: 'bold',
   },
   continueButton: {
-    backgroundColor: '#3EC6C9',
-    borderRadius: 50,
-    padding: 15,
+    width: '100%',
+    backgroundColor: '#00B3B3',
+    borderRadius: 12,
+    padding: 16,
     alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 20,
+    shadowColor: '#00B3B3',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   continueButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
     color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
 }); 
