@@ -21,7 +21,7 @@ export default function GraphScreen() {
   const { gender, name } = params;
 
   const handleContinue = () => {
-    router.replace('/(tabs)');
+    router.push('/subscription');
   };
 
   const chartData = {
