@@ -1,8 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const MoreScreen = () => {
+  const router = useRouter();
   const quickAccessItems = [
     { name: 'Challenge', image: require('../../assets/images/challenge.png'), special: true },
     { name: 'Connected Devices', image: require('../../assets/images/Devices.png') },
@@ -21,9 +23,18 @@ const MoreScreen = () => {
     { name: 'About', icon: 'information-circle-outline' },
   ];
 
-  const renderGridItem = ({ name, image, special = false }) => (
+  const renderGridItem = ({ name, image, special = false }: { name: string; image: any; special?: boolean }) => (
     <View style={styles.gridItem} key={name}>
-      <TouchableOpacity style={[styles.iconButton, special && styles.specialButton]}>
+      <TouchableOpacity 
+        style={[styles.iconButton, special && styles.specialButton]} 
+        onPress={() => {
+          if (name === 'Fasting') {
+            router.push('/(main)/Fasting');
+          } else if (name === 'Cheat Day') {
+            router.push({ pathname: '/(main)/ActivePlan', params: { from: 'cheatDay' } });
+          }
+        }}
+      >
         <Image source={image} style={styles.gridImage} />
       </TouchableOpacity>
       <Text style={styles.gridItemText}>{name}</Text>
@@ -56,7 +67,14 @@ const MoreScreen = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Help</Text>
           <View style={[styles.gridContainer, { justifyContent: 'center' }]}>
-            {helpItems.map(renderGridItem)}
+            {helpItems.map(({ name, icon }) => (
+              <View style={styles.gridItem} key={name}>
+                <TouchableOpacity style={styles.iconButton}>
+                  <Ionicons name={icon as any} size={32} color="#666" />
+                </TouchableOpacity>
+                <Text style={styles.gridItemText}>{name}</Text>
+              </View>
+            ))}
           </View>
         </View>
       </ScrollView>

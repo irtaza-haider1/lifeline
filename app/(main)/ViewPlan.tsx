@@ -1,13 +1,14 @@
 import { Feather } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React from 'react';
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Image, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
 // Original View Plan Component
 const DefaultView = () => {
     const router = useRouter();
     const { workoutIndex } = useLocalSearchParams();
+
     const scheduleData = [
         { image: require('../../assets/images/workout-1.png'), title: 'Dumbbell Flyes', details: '(Chest)', cal: '15 cal', time: '15 mins' },
         { image: require('../../assets/images/workout-2.png'), title: 'Bench Press', details: '(Chest)', cal: '25 cal', time: '20 mins' },
@@ -141,6 +142,7 @@ const ChallengeView = () => {
 
 const ViewPlanScreen = () => {
     const { isChallenge } = useLocalSearchParams();
+
     return (
         <SafeAreaView style={styles.container}>
             {isChallenge === 'true' ? <ChallengeView /> : <DefaultView />}

@@ -1,12 +1,13 @@
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { ImageBackground, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { PieChart } from 'react-native-gifted-charts';
 
 const MealIntakeScreen = () => {
     const router = useRouter();
+    const { from } = useLocalSearchParams();
 
     return (
         <ImageBackground source={require('../../assets/images/meal-intake.png')} style={styles.imageBackground}>
@@ -68,7 +69,7 @@ const MealIntakeScreen = () => {
                         </View>
                     </ScrollView>
                                         <TouchableOpacity style={styles.addButton} onPress={() => router.push('/')}>
-                        <Text style={styles.addButtonText}>Add to Meal</Text>
+                        <Text style={styles.addButtonText}>{from === 'addManually' ? 'Done' : 'Add to Meal'}</Text>
                     </TouchableOpacity>
                 </SafeAreaView>
             </LinearGradient>

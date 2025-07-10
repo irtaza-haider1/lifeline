@@ -1,7 +1,6 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 
 const ApplauseScreen = () => {
     const router = useRouter();
@@ -10,10 +9,10 @@ const ApplauseScreen = () => {
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>
                 <View style={styles.imageContainer}>
-                    <LinearGradient
+                    {/* <LinearGradient
                         colors={['rgba(62, 198, 201, 0.3)', 'rgba(62, 198, 201, 0)']}
                         style={styles.gradient}
-                    />
+                    /> */}
                     <Image
                         source={require('../../assets/images/Healthy_exercise.png')}
                         style={styles.image}
@@ -62,13 +61,13 @@ const styles = StyleSheet.create({
         height: '80%',
     },
     title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: '#333',
+        fontSize: 24,
+        fontWeight: '700',
+        color: '#4A4F4E',
         marginBottom: 10,
     },
     subtitle: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
         color: '#3EC6C9',
         marginBottom: 20,
@@ -76,6 +75,7 @@ const styles = StyleSheet.create({
     description: {
         fontSize: 16,
         color: '#666',
+        fontWeight: '500',
         textAlign: 'center',
         lineHeight: 24,
     },

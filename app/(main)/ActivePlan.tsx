@@ -1,7 +1,7 @@
 import { Feather } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DietPlan from '../../components/DietPlan';
 import DietScheduleCard from '../../components/DietScheduleCard';
 
@@ -55,11 +55,71 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 20, fontWeight: 'bold' },
   description: { fontSize: 16, color: '#666', textAlign: 'center', marginBottom: 20, paddingHorizontal: 20 },
   listContainer: { paddingBottom: 90 },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalImage: {
+    width: 100,
+    height: 100,
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#3EC6C9',
+    marginBottom: 15,
+  },
+  modalText: {
+    marginBottom: 25,
+    textAlign: 'center',
+    color: '#666',
+    fontSize: 16,
+    lineHeight: 22,
+  },
+  modalButton: {
+    backgroundColor: '#3EC6C9',
+    borderRadius: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 50,
+    elevation: 2,
+  },
+  modalButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 16,
+  },
 });
 
 const ActivePlanScreen = () => {
   const router = useRouter();
-  const [selectedPlan, setSelectedPlan] = useState<any>(null);
+  const { from } = useLocalSearchParams();
+  const [isPopupVisible, setPopupVisible] = useState(from === 'cheatDay');
+
+  useEffect(() => {
+      setPopupVisible(from === 'cheatDay');
+  }, [from]);
+  const [selectedPlan, setSelectedPlan] = useState<any>(() => {
+    return from === 'cheatDay' ? dietPlans.find(p => p.isActive) || dietPlans[0] : null;
+  });
   const [activeDay, setActiveDay] = useState('Day 1');
   const [activeMeal, setActiveMeal] = useState('Breakfast');
 
@@ -71,6 +131,31 @@ const ActivePlanScreen = () => {
 
     return (
       <View style={styles.viewPlanContainer}>
+        <Modal
+            animationType="fade"
+            transparent={true}
+            visible={isPopupVisible}
+            onRequestClose={() => {
+                setPopupVisible(!isPopupVisible);
+            }}
+        >
+            <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                    <Image source={require('../../assets/images/pan.gif')} style={styles.modalImage} />
+                    <Text style={styles.modalTitle}>Hurray!</Text>
+                    <Text style={styles.modalText}>As you have followed your diet regularly today is your cheat day.</Text>
+                    <TouchableOpacity
+                        style={styles.modalButton}
+                        onPress={() => {
+                        setPopupVisible(false);
+                        router.push('/(main)/CheatDay');
+                    }}
+                    >
+                        <Text style={styles.modalButtonText}>Add Meal</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </Modal>
         <View style={styles.viewPlanHeader}>
           <TouchableOpacity onPress={() => setSelectedPlan(null)} style={styles.backButton}>
             <Feather name="arrow-left" size={24} color="#000" />
