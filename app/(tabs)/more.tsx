@@ -32,6 +32,10 @@ const MoreScreen = () => {
             router.push('/(main)/Fasting');
           } else if (name === 'Cheat Day') {
             router.push({ pathname: '/(main)/ActivePlan', params: { from: 'cheatDay' } });
+          } else if (name === 'Sleep') {
+            router.push('/(main)/sleep');
+          } else if (name === 'Medication') {
+            router.push('/(main)/Medication');
           }
         }}
       >
