@@ -36,6 +36,8 @@ const MoreScreen = () => {
             router.push('/(main)/sleep');
           } else if (name === 'Medication') {
             router.push('/(main)/Medication');
+          } else if (name === 'Connected Devices') {
+            router.push('/(main)/ConnectedDevice');
           }
         }}
       >
@@ -73,7 +75,14 @@ const MoreScreen = () => {
           <View style={[styles.gridContainer, { justifyContent: 'center' }]}>
             {helpItems.map(({ name, icon }) => (
               <View style={styles.gridItem} key={name}>
-                <TouchableOpacity style={styles.iconButton}>
+                <TouchableOpacity
+                  style={styles.iconButton}
+                  onPress={() => {
+                    if (name === 'Setting') {
+                      router.push('/(main)/settings');
+                    }
+                  }}
+                >
                   <Ionicons name={icon as any} size={32} color="#666" />
                 </TouchableOpacity>
                 <Text style={styles.gridItemText}>{name}</Text>
