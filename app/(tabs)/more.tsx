@@ -38,6 +38,8 @@ const MoreScreen = () => {
             router.push('/(main)/Medication');
           } else if (name === 'Connected Devices') {
             router.push('/(main)/ConnectedDevice');
+          } else if (name === 'Water Intake') {
+            router.push('/waterIntake');
           }
         }}
       >
