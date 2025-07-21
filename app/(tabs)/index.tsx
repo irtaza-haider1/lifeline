@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import React from 'react';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { PieChart } from 'react-native-gifted-charts';
@@ -114,7 +115,7 @@ const HomeScreen = () => {
               <Image source={require('../../assets/images/emerson.png')} style={[styles.avatar, styles.avatarOverlap]} />
             </View>
             <Text style={styles.joinedText}>150 Joined</Text>
-            <TouchableOpacity style={styles.joinButton}><Text style={styles.joinButtonText}>Join</Text></TouchableOpacity>
+            <TouchableOpacity style={styles.joinButton} onPress={() => router.push('/(main)/JoinChallenge')}><Text style={styles.joinButtonText}>Join</Text></TouchableOpacity>
           </View>
         </View>
 

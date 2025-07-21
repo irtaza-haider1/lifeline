@@ -34,12 +34,18 @@ const MoreScreen = () => {
             router.push({ pathname: '/(main)/ActivePlan', params: { from: 'cheatDay' } });
           } else if (name === 'Sleep') {
             router.push('/(main)/sleep');
+          } else if (name === 'Meditation') {
+            router.push('/(main)/meditation');
           } else if (name === 'Medication') {
             router.push('/(main)/Medication');
           } else if (name === 'Connected Devices') {
             router.push('/(main)/ConnectedDevice');
           } else if (name === 'Water Intake') {
             router.push('/waterIntake');
+          } else if (name === 'Challenge') {
+            router.push('/challenges');
+          } else if (name === 'Fitness band') {
+            router.push('/(main)/FitnessBand');
           }
         }}
       >
